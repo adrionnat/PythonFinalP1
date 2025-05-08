@@ -1,4 +1,5 @@
 import csv
+import os.path
 from PyQt6.QtWidgets import *
 from gui import *
 
@@ -8,7 +9,6 @@ class Logic(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.submit_button.clicked.connect(lambda :self.submit())
-
 
     def submit(self) -> None:
         """
@@ -26,26 +26,33 @@ class Logic(QMainWindow, Ui_MainWindow):
             self.label_under_button.setStyleSheet("color:red")
             self.label_under_button.setText("Select Candidate")
 
+        if self.radioButton_john.isChecked():
+            vote = "John"
+        if self.radioButton_jane.isChecked():
+            vote = "jane"
 
-            # saves to csv once requirements are met
+        # saves to csv once requirements are met
         if id_number.isdigit() and self.buttonGroup.checkedButton():
             try:
                 with open('data.csv', 'a', newline='') as csv_file:
                     writer = csv.writer(csv_file)
-                    writer.writerow(['id', 'candidate'])
-                    writer.writerow([id_number])
+                    csv_file.write('ID, Candidate\n')
+                    writer.writerow([id_number, vote])
                     self.label_under_button.setStyleSheet("color:green")
-                    self.label_under_button.setText("Submitted")
+                    self.label_under_button.setText("Vote submitted")
                     self.id_input.setFocus()
                     self.id_input.setFocus()
                     self.id_input.clear()
 
-                    with open('data.csv', 'r', newline='') as csv_file:
-                        reader = csv.reader(csv_file)
-                        for row in reader:
-                            if row[0] == id_number:
-                                self.label_under_button.setStyleSheet("color:red")
-                                self.label_under_button.setText("Already Voted")
+                    #checks for duplicates
+                    if os.path.exists('data.csv'):
+                        with open('data.csv', 'r', newline='') as csv_file:
+                            reader = csv.reader(csv_file)
+                            for row in reader:
+                                if row[0] == id_number:
+                                    self.label_under_button.setStyleSheet("color:red")
+                                    self.label_under_button.setText("Already Voted")
+
 
                     if self.buttonGroup.checkedButton() != 0:
                         self.buttonGroup.setExclusive(False)
@@ -54,16 +61,3 @@ class Logic(QMainWindow, Ui_MainWindow):
 
             except ValueError:
                 self.label_under_button.setText(text="Data not saved")
-
-
-
-        #saves to csv once requirements are met
-
-
-
-
-
-
-
-
-
