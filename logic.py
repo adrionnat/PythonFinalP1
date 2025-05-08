@@ -9,6 +9,7 @@ class Logic(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.submit_button.clicked.connect(lambda :self.submit())
 
+
     def submit(self) -> None:
         """
         Check user submission to ensure completeness.
@@ -25,36 +26,36 @@ class Logic(QMainWindow, Ui_MainWindow):
             self.label_under_button.setStyleSheet("color:red")
             self.label_under_button.setText("Select Candidate")
 
-        try:
-            with open('data.csv', 'r', newline='') as csv_file:
-                reader = csv.reader(csv_file)
-                for row in reader:
-                    if row and row[0] == id_number:
-                        self.label_under_button.setStyleSheet("color:red")
-                        self.label_under_button.setText("Already Voted")
 
             # saves to csv once requirements are met
-            if id_number.isdigit() and self.buttonGroup.checkedButton() and row[0] != id_number:
+        if id_number.isdigit() and self.buttonGroup.checkedButton():
+            try:
                 with open('data.csv', 'a', newline='') as csv_file:
-                    try:
-                        writer = csv.writer(csv_file)
-                        writer.writerow(['id', 'candidate'])
-                        writer.writerow([id_number])
-                        self.label_under_button.setStyleSheet("color:green")
-                        self.label_under_button.setText("Submitted")
-                        self.id_input.setFocus()
-                        self.id_input.setFocus()
-                        self.id_input.clear()
+                    writer = csv.writer(csv_file)
+                    writer.writerow(['id', 'candidate'])
+                    writer.writerow([id_number])
+                    self.label_under_button.setStyleSheet("color:green")
+                    self.label_under_button.setText("Submitted")
+                    self.id_input.setFocus()
+                    self.id_input.setFocus()
+                    self.id_input.clear()
 
-                        if self.buttonGroup.checkedButton() != 0:
-                            self.buttonGroup.setExclusive(False)
-                        self.buttonGroup.checkedButton().setChecked(False)
-                        self.buttonGroup.setExclusive(True)
+                    with open('data.csv', 'r', newline='') as csv_file:
+                        reader = csv.reader(csv_file)
+                        for row in reader:
+                            if row[0] == id_number:
+                                self.label_under_button.setStyleSheet("color:red")
+                                self.label_under_button.setText("Already Voted")
 
-                    except ValueError:
-                        self.label_under_button.setText(text="Data not saved")
-        except ValueError:
-            self.label_under_button.setText("error")
+                    if self.buttonGroup.checkedButton() != 0:
+                        self.buttonGroup.setExclusive(False)
+                    self.buttonGroup.checkedButton().setChecked(False)
+                    self.buttonGroup.setExclusive(True)
+
+            except ValueError:
+                self.label_under_button.setText(text="Data not saved")
+
+
 
         #saves to csv once requirements are met
 
