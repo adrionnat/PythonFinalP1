@@ -31,33 +31,32 @@ class Logic(QMainWindow, Ui_MainWindow):
         if self.radioButton_jane.isChecked():
             vote = "jane"
 
+        if os.path.exists('data.csv'):
+            with open('data.csv', 'r', newline='') as csv_file:
+                reader = csv.reader(csv_file)
+                for row in reader:
+                    if row[0] == id_number:
+                        self.label_under_button.setStyleSheet("color:red")
+                        self.label_under_button.setText("Already Voted")
+
         # saves to csv once requirements are met
         if id_number.isdigit() and self.buttonGroup.checkedButton():
-            try:
-                with open('data.csv', 'a', newline='') as csv_file:
-                    writer = csv.writer(csv_file)
-                    csv_file.write('ID, Candidate\n')
-                    writer.writerow([id_number, vote])
-                    self.label_under_button.setStyleSheet("color:green")
-                    self.label_under_button.setText("Vote submitted")
-                    self.id_input.setFocus()
-                    self.id_input.setFocus()
-                    self.id_input.clear()
+            with open('data.csv', 'a', newline='') as csv_file:
+                writer = csv.writer(csv_file)
+                csv_file.write('ID, Candidate\n')
+                try:
+                    if row [0] != id_number or not row:
+                        writer.writerow([id_number, vote])
+                        self.label_under_button.setStyleSheet("color:green")
+                        self.label_under_button.setText("Vote submitted")
+                        self.id_input.setFocus()
+                        self.id_input.setFocus()
+                        self.id_input.clear()
 
-                    #checks for duplicates
-                    if os.path.exists('data.csv'):
-                        with open('data.csv', 'r', newline='') as csv_file:
-                            reader = csv.reader(csv_file)
-                            for row in reader:
-                                if row[0] == id_number:
-                                    self.label_under_button.setStyleSheet("color:red")
-                                    self.label_under_button.setText("Already Voted")
+                        if self.buttonGroup.checkedButton() != 0:
+                            self.buttonGroup.setExclusive(False)
+                        self.buttonGroup.checkedButton().setChecked(False)
+                        self.buttonGroup.setExclusive(True)
 
-
-                    if self.buttonGroup.checkedButton() != 0:
-                        self.buttonGroup.setExclusive(False)
-                    self.buttonGroup.checkedButton().setChecked(False)
-                    self.buttonGroup.setExclusive(True)
-
-            except ValueError:
-                self.label_under_button.setText(text="Data not saved")
+                except ValueError:
+                    self.label_under_button.setText(text="Data not saved")
